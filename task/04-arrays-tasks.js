@@ -613,25 +613,13 @@ function getElementByIndexes(arr, indexes) {
  *
  */
 function swapHeadAndTail(arr) {
-
-    function swap(index1, index2, arr) {
-      let temp = arr[index1];
-      arr[index1] = arr[index2];
-      arr[index2] = temp;
-    }
-
-    function swap(index, item, arr) {
-       arr[(length / 2 + index) % length] = item;
-       return arr;
-    }
-
-    if (arr.length < 2)
-      return arr;
-    var newArr = new Array(arr.length).fill();
-    newArr.length = arr.length;
-    let length = arr.length;
-    arr.map( (item, index) => newArr = swap(index, item, newArr));
-    return newArr;//swap(index, length / 2 + index, arr ));
+  let length = arr.length;
+  if (length < 2)
+    return arr; 
+  let head = arr.slice(length / 2 + length % 2);
+  if (length % 2 != 0)
+     head = head.concat(arr[Math.floor(length / 2)]); 
+  return head.concat(arr.slice(0, length / 2));
 }
 
 
