@@ -555,7 +555,11 @@ function distinct(arr) {
  *   }
  */
 function group(array, keySelector, valueSelector) {
-   throw new Error('Not implemented');
+    var map = new Map();
+    array.map( key => {
+            map.set(keySelector(key), (map.get(keySelector(key)) === undefined ? [] : map.get(keySelector(key))).concat([valueSelector(key)]));
+    });
+    return map;
 }
 
 /**
@@ -590,7 +594,8 @@ function selectMany(arr, childrenSelector) {
  *   [[[ 1, 2, 3]]], [ 0, 0, 1 ]      => 2        (arr[0][0][1])
  */
 function getElementByIndexes(arr, indexes) {
-    throw new Error('Not implemented');
+    indexes.map(index => arr = arr[index]);
+    return arr;
 }
 
 
@@ -613,13 +618,13 @@ function getElementByIndexes(arr, indexes) {
  *
  */
 function swapHeadAndTail(arr) {
-  let length = arr.length;
-  if (length < 2)
+    let length = arr.length;
+    if (length < 2)
     return arr; 
-  let head = arr.slice(length / 2 + length % 2);
-  if (length % 2 != 0)
-     head = head.concat(arr[Math.floor(length / 2)]); 
-  return head.concat(arr.slice(0, length / 2));
+    let head = arr.slice(length / 2 + length % 2);
+    if (length % 2 != 0)
+       head = head.concat(arr[Math.floor(length / 2)]); 
+    return head.concat(arr.slice(0, length / 2));
 }
 
 

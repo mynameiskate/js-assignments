@@ -31,7 +31,7 @@
  * @return {RegExp}
  */
 function getRegexForGuid() {
-   throw new Error('Not implemented');
+   return new RegExp('^\{[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\}$', 'i');
 }
 
 
@@ -53,13 +53,13 @@ function getRegexForGuid() {
  *
  */
 function getRegexForPitSpot() {
-   throw new Error('Not implemented');
+   return new RegExp('p.t');
 }
 
 
 /**
  * Вернуть регулярное выражение, которое валидирует IPv4 строку в формате
- * 'XX.XX.XX.XX', где XX - число от 0 до 255
+ * 'XX.XX.XX.XX', где XX - чb исло от 0 до 255
  *
  * Valid IPv4:                       Invalid IPv4
  * ---------------                  -----------------
@@ -72,7 +72,7 @@ function getRegexForPitSpot() {
  * @return {RegExp}
  */
 function getRegexForIPv4() {
-   throw new Error('Not implemented');
+    return new RegExp('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$');
 }
 
 
@@ -92,7 +92,7 @@ function getRegexForIPv4() {
  * @return {RegExp}
  */
 function getRegexForSSN() {
-   throw new Error('Not implemented');
+    return new RegExp('(?!000)[0-9]{3}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}');
 }
 
 
@@ -117,8 +117,9 @@ function getRegexForSSN() {
  *   'Pa55'.match(validator) => false
  */
 function getPasswordValidator(minLength) {
-   throw new Error('Not implemented');
+   return new RegExp('^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])[a-zA-Z0-9]'+'{' + minLength + ',}');
 }
+
 
 
 module.exports = {
