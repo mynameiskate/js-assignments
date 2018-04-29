@@ -431,43 +431,24 @@ function isBracketsBalanced(str) {
  *
  */
 function timespanToHumanString(startDate, endDate) {
-    throw new Error('Not implemented');
-    let seconds = endDate.getUTCSeconds() - startDate.getUTCSeconds() + (endDate.getTime() - startDate.getTime()) / 1000;
-    let minutes = endDate.getUTCMinutes() - startDate.getUTCMinutes() + Math.round(seconds / 60);
-    let hours = endDate.getUTCHours() - startDate.getUTCHours() + Math.round(minutes / 60);
-    let days = Math.round(hours / 24);
-    let months = Math.round(days / 30);
-    let years = Math.round(months / 12);
+    let seconds = (endDate - startDate - 0.001) / 1000 
+    let minutes = seconds / 60;
+    let hours = minutes / 60;
+    let days = hours / 24;
+    let months = days / 30;
+    let years = months / 12;
 
-    if (days > 545) return years + ' years ago';
+    if (days > 545) return Math.round(years) + ' years ago';
     if (days > 345) return 'a year ago';
-    if (days > 45) return months + ' months ago';
-    if (days > 25) return ' a month ago';
-    if (hours > 36) return days + ' days ago';
-    if (hours > 22) return ' a day ago';
-    if (minutes > 90) return hours + ' hours ago';
+    if (days > 45) return Math.round(months) + ' months ago';
+    if (days > 25) return 'a month ago';
+    if (hours > 36) return Math.round(days) + ' days ago';
+    if (hours > 22) return 'a day ago';
+    if (minutes > 90) return Math.round(hours) + ' hours ago';
     if (minutes > 45) return 'an hour ago';
-    if (seconds > 90) return minutes + ' minutes ago';
+    if (seconds > 90) return Math.round(minutes) + ' minutes ago';
     if (seconds > 45) return 'a minute ago';
-    return 'a few seconds ago';
-
-    /*let difference = (endDate - startDate) / 1000;
-
-    if (difference <= 45) return 'a few seconds ago';
-    if (difference <= 90) return 'a minute ago';
-    if (difference <= 45 * minutes) 
-        return Math.round( (difference - 0.00001) / seconds) + ' minutes ago';
-    if (difference <= 90 * minutes) return 'an hour ago';
-    //difference = difference / minutes / seconds;
-    if (difference < 22 * minutes * seconds) return Math.round((difference - 0.00001) / seconds / minutes) + ' hours ago';
-    if (difference <= 36) return ' a day ago';
-    difference /= hours;
-    if (difference <= 25) return Math.floor(difference) + ' days ago';
-    if (difference <= 45) return ' a month ago';
-    let passedMonths = Math.floor(difference / days)
-    if (difference <= 345) return passedMonths + ' months ago';
-    if (difference <= 545) return 'a year ago';
-    return Math.floor(passedMonths / months) + ' years ago';*/
+    return 'a few seconds ago';  
 }
 
 /**
