@@ -17,8 +17,32 @@
  *  ]
  */
 function createCompassPoints() {
-    throw new Error('Not implemented');
-    var sides = ['N','E','S','W'];  // use array of cardinal directions only!
+    let sides = ['N','E','S','W'];  
+    const diff = 11.25;
+    var azimuth = -diff;
+
+    let getPoint = (abbreviation) => {
+        azimuth += diff;
+        return { abbreviation: abbreviation, azimuth: azimuth };
+    }
+
+    let compass = [];
+
+    for (let i = 0; i < sides.length; i++) {
+        let prev = sides[i];
+        let next = sides[(i + 1) % sides.length];
+        let isEven = (i % 2) ? false : true;
+        compass.push(getPoint(`${prev}`));
+        compass.push(getPoint(`${prev}b${next}`));
+        compass.push(isEven ? getPoint(`${prev}${prev}${next}`) : getPoint(`${prev}${next}${prev}`));
+        compass.push(isEven ? getPoint(`${prev}${next}b${prev}`) : getPoint(`${next}${prev}b${prev}`));
+        compass.push(isEven ? getPoint(`${prev}${next}`) : getPoint(`${next}${prev}`));
+        compass.push(isEven ? getPoint(`${prev}${next}b${next}`) : getPoint(`${next}${prev}b${next}`));
+        compass.push(isEven ? getPoint(`${next}${prev}${next}`) :  getPoint(`${next}${next}${prev}`));
+        compass.push(getPoint(`${next}b${prev}`));
+    }
+
+    return compass;
 }
 
 
@@ -55,8 +79,74 @@ function createCompassPoints() {
  *
  *   'nothing to do' => 'nothing to do'
  */
-function* expandBraces(str) {
-    throw new Error('Not implemented');
+function* expandBraces(str) {    
+    const OPEN = '{';
+    const CLOSE = '}';
+    const SEPARATOR = ',';
+    const BLANK = ' ';
+
+    let i = 0;
+    let curLevel = getVariants(0, "{"+str+"}");
+
+    for (let word of curLevel) {
+        yield word;
+    } 
+
+   function addToArray(resArr, addStr) {
+        if (!resArr.length) return [addStr];
+        return resArr.map( x => x.concat(addStr))
+    }
+
+    function pushToArray(resArr, addArr) {
+        if (!resArr.length) return addArr;
+        addArr.map( x => resArr.push(x));
+        return resArr;
+    }
+
+    function concatVariants(variants, array) {
+        if (!array.length) return variants;
+        let result = [];
+        for (let variant of variants) {
+            for (let substr of array) {
+                result.push(substr.concat(variant));
+            }
+        }
+        return result;
+    }
+
+    function getVariants(startIndex, str) {
+        let curLevel = [];
+        let variants = [];
+        i = startIndex;
+        while (str[i]) {
+            if (str[i] == OPEN) {
+                if (startIndex != i) {
+                    variants = addToArray(variants, str.substring(startIndex, i));
+                }
+                variants = concatVariants(getVariants(i + 1, str), variants);
+                startIndex = i + 1;
+            }
+            else if (str[i] == CLOSE) {
+                if (startIndex != i || !variants.length) {
+                    variants = concatVariants([str.substring(startIndex, i)], variants);
+                } 
+
+                curLevel = pushToArray(curLevel, variants);
+                return curLevel;
+            }
+            else if (str[i] == SEPARATOR && str[i + 1] != BLANK) {
+                if (startIndex != i) {
+                    variants = concatVariants([str.substring(startIndex, i)], variants);
+                }
+                curLevel = pushToArray(curLevel, variants);
+                variants = [];
+                startIndex = i + 1;
+            }
+            i++;
+        }
+        if (!curLevel.length) return variants;
+        return curLevel;
+    }
 }
 
 
@@ -89,7 +179,24 @@ function* expandBraces(str) {
  *
  */
 function getZigZagMatrix(n) {
-    throw new Error('Not implemented');
+    let matrix = [];
+    for (let i = 0; i < n; i++) 
+        matrix[i] = [];
+
+    let i = 0, j = 0;
+    const total = n * n;
+
+    for (let num = 0; num < total; num++) {
+        matrix[i][j] = num;
+        if ((i + j) % 2 == 0) {
+            (j + 1 < n) ? j ++ : i += 2;
+            if (i > 0) i --;
+        } else {
+            (i + 1 < n) ? i ++ : j += 2;
+            if (j > 0) j --;
+        }
+    }
+    return matrix;
 }
 
 
@@ -114,9 +221,28 @@ function getZigZagMatrix(n) {
  *
  */
 function canDominoesMakeRow(dominoes) {
-    throw new Error('Not implemented');
-}
+    let valueMap = Array(7).fill(0);
+    let doublesMap = Array(7).fill(0);
+    dominoes.map(function(domino) {
+        domino.map(value => valueMap[value]++);
+        if (domino[0] == domino[1]) doublesMap[domino[0]]++;
+    });
 
+    for (let i = 0; i < doublesMap.length; i++) {
+        if (doublesMap[i] && valueMap[i] == 2) {
+            return false;
+        }
+    }
+
+    let odd = 0;
+    for (let value of valueMap) {
+        if (value % 2) odd++;
+    }
+
+    if (odd == 0 || odd == 2) 
+        return true;
+    else return false;
+}
 
 /**
  * Возвращает строковое представление заданного упорядоченного списка целых чисел.
@@ -138,7 +264,23 @@ function canDominoesMakeRow(dominoes) {
  * [ 1, 2, 4, 5]          => '1,2,4,5'
  */
 function extractRanges(nums) {
-    throw new Error('Not implemented');
+    let i = 0;
+    let result = [];
+    while (i < nums.length) {
+        let forward = i;
+        while (nums[forward] + 1 == nums[forward + 1]) forward++;
+        if (forward - i > 1) {
+            result.push(`${nums[i]}-${nums[forward]}`);
+        }
+        else if (forward - i) {
+            result.push(`${nums[i]},${nums[i + 1]}`);
+        }
+        else {
+           result.push(`${nums[i]}`);
+        }  
+        i = forward + 1;
+    }
+    return result.join(',');
 }
 
 module.exports = {
