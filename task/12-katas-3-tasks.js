@@ -45,9 +45,31 @@ function findStringInSnakingPuzzle(puzzle, searchStr) {
  *    'abc' => 'abc','acb','bac','bca','cab','cba'
  */
 function* getPermutations(chars) {
-    throw new Error('Not implemented');
-}
+    yield (chars);
 
+    function swap(arr, a, b) {
+        let temp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = temp;
+    }
+
+    let charArr = chars.split('');
+    let temp = new Array(chars.length).fill(0);
+    let i = 0;
+
+    while (i < charArr.length) {
+        if (temp[i] < i) {
+            (i % 2 == 0) ? swap(charArr, 0, i) : swap(charArr, temp[i], i);
+            yield(charArr.join(''));
+            temp[i]++;
+            i = 0;
+        }
+        else {
+            temp[i] = 0;
+            i++;
+        }
+    }
+}
 
 /**
  * Возвращает наибольшую прибыль от игры на котировках акций.
@@ -65,7 +87,16 @@ function* getPermutations(chars) {
  *    [ 1, 6, 5, 10, 8, 7 ] => 18  (купить по 1,6,5 и затем продать все по 10)
  */
 function getMostProfitFromStockQuotes(quotes) {
-    throw new Error('Not implemented');
+    let sum = 0;
+
+    while (quotes.length) {
+        let indexOfMaxValue = quotes.reduce( (iMax, num, index) => num > quotes[iMax] ? index : iMax, 0);
+        for (let i = 0; i < indexOfMaxValue; i++) {
+            sum += quotes[indexOfMaxValue] - quotes[i];
+        }
+        quotes = quotes.slice(indexOfMaxValue + 1);
+    }
+    return sum;
 }
 
 
@@ -90,14 +121,32 @@ function UrlShortener() {
 }
 
 UrlShortener.prototype = {
-
     encode: function(url) {
-        throw new Error('Not implemented');
+        let result = "";
+        let cur, next, newChar;
+        for (let i = 0; i < url.length - 1; i += 2) {
+            cur = url.charCodeAt(i); 
+            next = url.charCodeAt(i + 1);
+            newChar = (cur << 8) | next;
+            result += String.fromCharCode(newChar);
+        }
+        if (url.length % 2) {
+            result += String.fromCharCode(url.charCodeAt(url.length - 1) << 8);
+        } 
+        return result;
     },
     
     decode: function(code) {
-        throw new Error('Not implemented');
-    } 
+        let result = "";
+        let cur, next, oldChar;
+        for (let i = 0; i < code.length; i++) {
+            oldChar = code.charCodeAt(i);
+            next = oldChar & 255;
+            cur = oldChar >> 8;
+            result += String.fromCharCode(cur) + ((next) ? String.fromCharCode(next) : '');
+        }
+        return result;
+    }
 }
 
 
