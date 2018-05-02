@@ -34,7 +34,33 @@
  *
  */
 function parseBankAccount(bankAccount) {
-    throw new Error('Not implemented');
+       const top =  [' _ ', '   ', ' _ ', ' _ ', '   ', ' _ ', ' _ ', ' _ ', ' _ ', ' _ '];
+    const middle =  ['| |', '  |', ' _|', ' _|', '|_|', '|_ ', '|_ ', '  |', '|_|', '|_|'];
+    const bottom =  ['|_|', '  |', '|_ ', ' _|', '  |', ' _|', '|_|', '  |', '|_|', ' _|'];
+
+    function getStringDigit(index, arr) {
+        let digit = [];
+        for (let i = 0; i < arr.length; i++) {
+            digit.push( arr[i].slice(index * 3, (index + 1) * 3));
+        }
+        return digit;
+    }
+
+    let stringAccount = bankAccount.split('\n');
+    const numOfDigits = bankAccount.length / 3 - 1;
+    let result = '';
+
+    for (let i = 0; i < numOfDigits; i++) {
+        const digit = getStringDigit(i, stringAccount);
+        for (let j = 0; j < numOfDigits; j++) {
+            if (top[j] == digit[0] && middle[j] == digit[1] && bottom[j] == digit[2]) {
+                result += j;
+                break;
+            }
+
+        }
+    } 
+    return result;
 }
 
 
@@ -63,7 +89,20 @@ function parseBankAccount(bankAccount) {
  *                                                                                                'characters.'
  */
 function* wrapText(text, columns) {
-    throw new Error('Not implemented');
+    let startOfLine = 0, endOfWord = 0;
+    let count = 0, i = 0;
+    while(text[i]) {
+        count++;
+        if (text[i] == ' ') endOfWord = i;
+        if (count > columns) {
+            yield text.substring(startOfLine, endOfWord);
+            startOfLine = endOfWord + 1;
+            count = 0;
+            i = endOfWord;
+        }
+        i++;
+    }
+    yield text.substring(startOfLine);
 }
 
 
@@ -101,9 +140,67 @@ const PokerRank = {
 }
 
 function getPokerHandRank(hand) {
-    throw new Error('Not implemented');
-}
+    const getIndex = card => 'A234567891JQK'.indexOf(card.slice(0,1));
+    const sortCards = (a, b) => getIndex(a) - getIndex(b);
+    const getKind = card => card[card.length - 1];
 
+    hand.sort(sortCards);
+    if (getIndex(hand[0]) == 0 && getIndex(hand[hand.length -1]) == 12) {
+        hand.push(hand.shift());
+    }
+    let allCardsCounts = getOneOfKindCount(hand);
+
+   function isStraight(hand){
+        for (let i = 0; i < hand.length - 1; i ++) {
+            const diff = getIndex(hand[i]) - getIndex(hand[i + 1]);
+            if (diff != -1 && diff != 12) {
+                return false;
+            }
+        }
+        return true;
+    }  
+
+    function isFlush(hand) {
+        for (let i = 0; i < hand.length - 1; i ++) {
+            if (getKind(hand[i]) != getKind(hand[i + 1])) return false;
+        }
+        return true;
+    }
+
+    function getOneOfKindCount(hand) {
+        let allCounts = [];
+        let current = 0, count = 1;
+        while(current < hand.length - 1) {
+            if (getIndex(hand[current]) == getIndex(hand[current + 1])) {
+                count++;
+            }
+            else {
+                allCounts.push(count);
+                count = 1;
+            }
+            current++;
+        }
+        allCounts.push(count);
+        return allCounts.sort( (a, b) => b - a);
+    }
+
+    const isStraightFlush = hand => isFlush(hand) && isStraight(hand);
+    const isFullHouse = allCardsCounts => allCardsCounts.length == 2 && allCardsCounts[0] == 3 && allCardsCounts[1] == 2;
+    const isFourOfKind = allCardsCounts => allCardsCounts[0] == 4;
+    const isThreeOfKind = allCardsCounts => allCardsCounts[0] == 3;
+    const isTwoPairs = allCardsCounts => allCardsCounts.length == 3 && allCardsCounts[0] == 2 && allCardsCounts[1] == 2;
+    const isOnePair = allCardsCounts => allCardsCounts.some( count => count == 2);
+
+    if (isStraightFlush(hand)) return PokerRank.StraightFlush;
+    if (isFourOfKind(allCardsCounts)) return PokerRank.FourOfKind;
+    if (isFullHouse(allCardsCounts)) return PokerRank.FullHouse;
+    if (isFlush(hand)) return PokerRank.Flush;
+    if (isStraight(hand)) return PokerRank.Straight;
+    if (isThreeOfKind(allCardsCounts)) return PokerRank.ThreeOfKind;
+    if (isTwoPairs(allCardsCounts)) return PokerRank.TwoPairs;
+    if (isOnePair(allCardsCounts)) return PokerRank.OnePair;
+    return PokerRank.HighCard;
+} 
 
 /**
  * Возвращает набор прямоугольников из заданной фигуры.
