@@ -270,7 +270,7 @@ function* getFigureRectangles(figure) {
                 lineCount = 0;
                 colCount = 0;
                 if (j == points[0] && i == points[2] && figure[points[3]][points[1]] == BLANK) continue;
-                while (figure[j + 1][x++] ==' '){
+                while (figure[j + 1][x++] == BLANK){
                     lineCount++;
                 }
                 while (figure[y++][i] != ANGLE){
