@@ -28,7 +28,43 @@
  *   'NULL'      => false 
  */
 function findStringInSnakingPuzzle(puzzle, searchStr) {
-    throw new Error('Not implemented');
+    let isInPath = (path, pos) => {
+        for (let arrPos of path)
+            if ((arrPos[0] == pos[0]) && (arrPos[1] == pos[1])) return true;
+        return false;
+    }
+
+    let isInPuzzle = (puzzle, word, curLetterNum, curPos) => {
+        if (curLetterNum == word.length - 1) {
+            if ((puzzle[curPos[0]][curPos[1]] == word[curLetterNum]) && (!isInPath(path, curPos))) {
+                return true;
+            } else return false;
+        } 
+        else {
+            if ((puzzle[curPos[0]][curPos[1]] == word[curLetterNum]) && (!isInPath(path, curPos))) {
+                let result = false;
+                path.push(curPos);
+                if (curPos[0] > 0)
+                    result = result || isInPuzzle(puzzle, word, curLetterNum + 1, [curPos[0] - 1, curPos[1]]);
+                if (curPos[1] < puzzle[curPos[0]].length - 1)
+                    result = result || isInPuzzle(puzzle, word, curLetterNum + 1, [curPos[0], curPos[1] + 1]);
+                if (curPos[0] < puzzle.length - 1)
+                    result = result || isInPuzzle(puzzle, word, curLetterNum + 1, [curPos[0] + 1, curPos[1]]);
+                if (curPos[1] > 0)
+                    result = result || isInPuzzle(puzzle, word, curLetterNum + 1, [curPos[0], curPos[1] - 1]);
+                path.pop();
+                return result;
+            } else return false;
+        }
+    }
+    
+    let path = new Array();
+    for (let i = 0; i < puzzle.length; i++)
+        for (let j = 0; j < puzzle[i].length; j++) {
+            if (isInPuzzle(puzzle, searchStr, 0, [i, j]))
+                return true;
+        }
+    return false; 
 }
 
 
