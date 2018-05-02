@@ -233,7 +233,53 @@ function getPokerHandRank(hand) {
  *    '+-------------+\n'
  */
 function* getFigureRectangles(figure) {
-   throw new Error('Not implemented');
+    figure = figure.split('\n');
+    const width = figure[0].length;
+    const height = figure.length;
+    const BLANK = ' ';
+    const ANGLE = '+';
+
+    let lineCount = 0, colCount = 0;
+    let x = 0, y = 0;
+    let points = [];
+    
+
+    function topLeftCornerOfRectangles(j, i) {
+        return figure[j][i] == ANGLE
+            && figure[j + 1][i] != BLANK
+            && figure[j][i + 1] 
+            && figure[j + 1][i] 
+            && figure[j][i + 1] != BLANK;
+    }
+
+    for (let j = 0; j < height; j++) {
+        for (let i = 0; i < width; i++) {
+            if (figure[j][i] == ANGLE && figure[j + 1][i] == BLANK && !figure[j][i + 1]
+                || figure[j][i] == ANGLE && !figure[j + 1][i] && figure[j][i + 1] == BLANK) {
+                points.push(j);
+                points.push(i);
+            }
+        }
+    } 
+
+    for (let j = 0; j < height; j++) {
+        for (let i = 0; i < width; i++) {
+            if (topLeftCornerOfRectangles(j, i)) {
+                x = i + 1;
+                y = j + 1;
+                lineCount = 0;
+                colCount = 0;
+                if (j == points[0] && i == points[2] && figure[points[3]][points[1]] == BLANK) continue;
+                while (figure[j + 1][x++] ==' '){
+                    lineCount++;
+                }
+                while (figure[y++][i] != ANGLE){
+                    colCount++
+                }
+                yield `+${'-'.repeat(lineCount)}+${`\n|${' '.repeat(lineCount)}|`.repeat(colCount)}\n+${'-'.repeat(lineCount)}+\n`
+            }
+        }
+    }
 }
 
 
